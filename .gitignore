@@ -1,0 +1,41 @@
+# Byte-compiled / caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
+logs/
+
+# Output directories
+results/
+work/
+tmp/
+*.tmp
+
+# Bioinformatics outputs
+*.bam
+*.bai
+*.cram
+*.crai
+*.vcf
+*.vcf.gz
+*.vcf.gz.tbi
+*.bcf
+*.fastq.gz
+*.fq.gz
+
+# QC reports
+*.html
+*.json
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local configs
+config/my_run_config.sh

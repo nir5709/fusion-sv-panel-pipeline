@@ -1,0 +1,17 @@
+# Replace placeholder values with the versions validated in your environment.
+
+conda                  : <fill_here>
+fastqc                 : <fill_here>
+fastp                  : <fill_here>
+bwa                    : <fill_here>
+samtools               : <fill_here>
+bcftools               : <fill_here>
+bedtools               : <fill_here>
+gatk                   : <fill_here>
+manta                  : <fill_here>
+gridss                 : <fill_here>
+delly                  : <fill_here>
+svaba                  : <fill_here>
+AnnotSV                : <fill_here>
+bgzip/tabix            : <fill_here>
+reference_build        : hg19 / GRCh37
