@@ -92,6 +92,20 @@ Consensus evidence across callers increases confidence in detected fusion events
 
 ---
 
+# Methodological Approach
+
+This workflow integrates multiple structural variant detection algorithms and evaluates breakpoint evidence using several complementary signals:
+
+- split-read alignments
+- discordant paired-end reads
+- local assembly-based variant detection
+- supplementary alignment bridging
+- depth-of-coverage near breakpoints
+
+Combining these signals improves sensitivity and breakpoint resolution for fusion detection in targeted sequencing panels.
+
+---
+
 # Key Features
 
 * Multi-caller SV detection strategy
@@ -314,8 +328,19 @@ Clinical use requires:
 
 # Author
 
-**Nihar Garg**
-Bioinformatics • Cancer Genomics
+**Nihar Garg**  
+Bioinformatics | Cancer Genomics
+
+---
+
+# Citation
+
+If you use this pipeline in research, please cite:
+
+Nihar Garg.  
+Fusion SV Panel Pipeline.  
+GitHub repository.  
+https://github.com/nir5709/fusion-sv-panel-pipeline
 
 ---
 
