@@ -35,8 +35,9 @@ This workflow processes paired-end FASTQ files and performs:
 
 ---
 
-# Pipeline Workflow
+## Pipeline Workflow
 
+```
 FASTQ
 ↓
 FastQC (raw reads)
@@ -54,10 +55,10 @@ GATK MarkDuplicates
 (Optional) BQSR
 ↓
 SV Detection
-├── Manta
-├── GRIDSS2
-├── DELLY
-└── SvABA
+  ├── Manta
+  ├── GRIDSS2
+  ├── DELLY
+  └── SvABA
 ↓
 AnnotSV Annotation
 ↓
@@ -66,6 +67,7 @@ Panel Gene Filtering
 Breakpoint Evidence Analysis
 ↓
 Summary Report
+```
 
 ---
 
