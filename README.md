@@ -1,44 +1,109 @@
-# fusion-sv-panel-pipeline
+# Fusion SV Panel Pipeline
 
-A targeted fusion and structural variant detection workflow for paired-end sequencing data using multiple SV callers and downstream panel-focused annotation.
+![GitHub repo size](https://img.shields.io/github/repo-size/nir5709/fusion-sv-panel-pipeline)
+![GitHub last commit](https://img.shields.io/github/last-commit/nir5709/fusion-sv-panel-pipeline)
+![GitHub license](https://img.shields.io/github/license/nir5709/fusion-sv-panel-pipeline)
+![Platform](https://img.shields.io/badge/platform-Linux-blue)
+![Genome](https://img.shields.io/badge/genome-hg19%20%2F%20GRCh37-green)
 
-## What this pipeline does
+A **targeted fusion and structural variant detection pipeline** for paired-end sequencing data using multiple SV callers and panel-focused annotation.
+
+---
+
+# Overview
 
 This workflow processes paired-end FASTQ files and performs:
 
-1. raw FASTQ quality control with FastQC
-2. read trimming with fastp
-3. trimmed FASTQ quality control
-4. BWA-MEM alignment
-5. BAM sorting and duplicate marking
-6. optional BQSR with GATK
-7. SV detection using:
-   - Manta
-   - GRIDSS2
-   - DELLY
-   - SvABA
-8. AnnotSV-based annotation
-9. panel-gene filtering for must-report events
-10. breakpoint evidence summarization around expected fusion loci
+1. Raw read quality control using **FastQC**
+2. Adapter trimming and quality filtering using **fastp**
+3. Quality control of trimmed reads
+4. Alignment using **BWA-MEM**
+5. BAM sorting and indexing using **SAMtools**
+6. Duplicate marking using **GATK MarkDuplicates**
+7. Optional **Base Quality Score Recalibration (BQSR)**
+8. Structural variant detection using:
 
-## Intended use
+* Manta
+* GRIDSS2
+* DELLY
+* SvABA
 
-This repository is designed for research workflows, assay development, and validated internal analysis pipelines.
+9. Structural variant annotation using **AnnotSV**
+10. Panel gene filtering
+11. Breakpoint evidence evaluation
+12. Final summary report generation
 
-It is not a substitute for clinical-grade reporting by itself. Any diagnostic or accredited-lab use should be supported by local validation, QC thresholds, SOPs, and reporting governance.
+---
 
-## Highlights
+# Pipeline Workflow
 
-- multi-caller SV strategy
-- expected breakpoint evidence support
-- panel-focused AnnotSV filtering
-- per-sample structured output directories
-- summary table for fusion evidence review
-- portable config-driven setup instead of hardcoded machine paths
+FASTQ
+↓
+FastQC (raw reads)
+↓
+fastp trimming
+↓
+FastQC (trimmed reads)
+↓
+BWA-MEM alignment
+↓
+SAMtools sorting
+↓
+GATK MarkDuplicates
+↓
+(Optional) BQSR
+↓
+SV Detection
+├── Manta
+├── GRIDSS2
+├── DELLY
+└── SvABA
+↓
+AnnotSV Annotation
+↓
+Panel Gene Filtering
+↓
+Breakpoint Evidence Analysis
+↓
+Summary Report
 
-## Repository structure
+---
 
-```text
+# Why Multiple SV Callers?
+
+Structural variant detection algorithms use different signals from sequencing data.
+
+| Tool    | Detection Strategy          |
+| ------- | --------------------------- |
+| Manta   | paired-end + split-read     |
+| GRIDSS2 | assembly-based SV detection |
+| DELLY   | paired-end + read-depth     |
+| SvABA   | local assembly              |
+
+Using multiple callers improves:
+
+* sensitivity
+* breakpoint resolution
+* detection of complex rearrangements
+
+Consensus evidence across callers increases confidence in detected fusion events.
+
+---
+
+# Key Features
+
+* Multi-caller SV detection strategy
+* Breakpoint-level evidence evaluation
+* Panel-specific gene filtering using AnnotSV
+* Structured per-sample output directories
+* Automated summary table across samples
+* Config-driven setup (no hardcoded machine paths)
+
+---
+
+# Repository Structure
+
+```
 fusion-sv-panel-pipeline/
 ├── run_fusion_sv_pipeline.sh
 ├── README.md
@@ -55,140 +120,203 @@ fusion-sv-panel-pipeline/
     └── tool_versions.txt
 ```
 
-## Inputs
+---
 
-### 1. Paired-end FASTQ files
-The script expects sample-specific FASTQ files in `READ_DIR`, matched with patterns like:
+# Input Requirements
 
-- `Sample1*_R1*.fastq.gz`
-- `Sample1*_R2*.fastq.gz`
+## 1. Paired-end FASTQ files
 
-### 2. Fusion targets TSV
-A tab-delimited file with header:
+The pipeline expects paired FASTQ files in the input directory (`READ_DIR`):
 
-```text
-sample	fusion	lbp	rbp
+```
+Sample1*_R1*.fastq.gz
+Sample1*_R2*.fastq.gz
 ```
 
-Example:
+---
 
-```text
+## 2. Fusion Target File
+
+Example format:
+
+```
 sample	fusion	lbp	rbp
 SAMPLE_001	EML4--ALK	chr2:42522694	chr2:29446394
 SAMPLE_002	ETV6--NTRK3	chr12:12022900	chr15:88483900
 ```
 
-### 3. Panel gene list
-One gene symbol per line.
+---
 
-## Outputs
+## 3. Panel Gene List
 
-For each sample, the workflow creates:
+One gene symbol per line:
 
-- raw and trimmed FastQC reports
-- trimmed FASTQ files
-- sorted, deduplicated, and optional BQSR BAMs
-- Manta / GRIDSS / DELLY / SvABA outputs
-- AnnotSV annotated TSVs
-- panel-filtered TSVs
-- per-sample logs
+```
+ALK
+RET
+ROS1
+NTRK1
+NTRK2
+NTRK3
+```
 
-A combined summary file is also created:
+---
 
-```text
+# Output
+
+For each sample the pipeline produces:
+
+### Quality Control
+
+* Raw FastQC reports
+* Trimmed FastQC reports
+
+### Processed Reads
+
+* Trimmed FASTQ files
+* Sorted BAM
+* Deduplicated BAM
+* Optional BQSR BAM
+
+### Structural Variant Results
+
+* Manta calls
+* GRIDSS2 calls
+* DELLY calls
+* SvABA calls
+
+### Annotation
+
+* AnnotSV annotated variants
+* Panel-filtered variant tables
+
+### Logs
+
+* Per-sample log files
+
+---
+
+# Summary Output
+
+A combined summary table is produced:
+
+```
 WORKROOT/summary/summary.tsv
 ```
 
-This includes:
+Key fields include:
 
-- sample
-- fusion
-- expected breakpoints
-- final BAM used
-- mean depth around breakpoint windows
-- supplementary alignment support
-- caller-specific BND hit counts
-- Manta run directory path
+* sample
+* fusion
+* breakpoint coordinates
+* mean depth near breakpoints
+* supplementary alignment support
+* SV caller evidence
 
-## Requirements
+---
 
-This pipeline assumes access to the following tools:
+# Software Requirements
 
-- conda
-- fastqc
-- fastp
-- bwa
-- samtools
-- bcftools
-- bedtools
-- GATK
-- Manta
-- GRIDSS2
-- DELLY
-- SvABA
-- AnnotSV
-- bgzip
-- tabix
+* Conda
+* FastQC
+* fastp
+* BWA
+* SAMtools
+* BCFtools
+* BEDtools
+* GATK
+* Manta
+* GRIDSS2
+* DELLY
+* SvABA
+* AnnotSV
+* bgzip
+* tabix
 
-## Setup
+The pipeline was developed and tested using **latest stable versions of all tools**.
 
-### 1. Clone the repository
+---
 
-```bash
-git clone https://github.com/YOUR_USERNAME/fusion-sv-panel-pipeline.git
+# Reference Genome
+
+```
+Human genome reference: hg19 / GRCh37
+```
+
+If adapting to **GRCh38**, update:
+
+* reference genome
+* dbSNP resource
+* panel BED file
+* AnnotSV database
+* blacklist files
+* fusion breakpoint coordinates
+
+---
+
+# Installation
+
+Clone repository:
+
+```
+git clone https://github.com/nir5709/fusion-sv-panel-pipeline.git
 cd fusion-sv-panel-pipeline
 ```
 
-### 2. Copy and edit the config
+---
 
-```bash
+# Configuration
+
+Create config file:
+
+```
 cp config/config.example.sh config/my_run_config.sh
 nano config/my_run_config.sh
 ```
 
-Edit all paths and environment names.
+Edit all required paths.
 
-### 3. Run the pipeline
+---
 
-```bash
+# Running the Pipeline
+
+```
 bash run_fusion_sv_pipeline.sh config/my_run_config.sh
 ```
 
-## Notes on references
+---
 
-This version is written for hg19 / GRCh37-style resources. If you adapt it for GRCh38, update:
+# Use Case
 
-- reference FASTA
-- index files
-- dbSNP resource
-- panel BED
-- blacklist file
-- AnnotSV database
-- fusion target coordinates
+This workflow is suitable for:
 
-## Suggested tested-version tracking
+* targeted oncology panels
+* fusion detection
+* structural variant analysis
+* research sequencing studies
 
-See `env/tool_versions.txt` and replace the placeholders with your actual validated versions before publishing or tagging a release.
+---
 
-## Recommended publication checklist
+# Disclaimer
 
-Before making the repository public, update:
+This pipeline is intended for **research use and assay development**.
 
-- your name and affiliation if desired
-- tool versions
-- example input files
-- LICENSE choice
-- validation statement in README
-- manuscript or preprint citation if applicable
+Clinical use requires:
 
-## Suggested citation section
+* local validation
+* QC thresholds
+* regulatory compliance
+* standardized reporting workflows.
 
-If you use this repository in a study, cite:
+---
 
-- the original software tools used in the workflow
-- your assay validation or benchmark study
-- this GitHub repository release tag
+# Author
 
-## License
+**Nihar Garg**
+Bioinformatics • Cancer Genomics
 
-This repository currently includes an MIT License template. Replace it if your institute or project requires a different license.
+---
+
+# License
+
+MIT License
