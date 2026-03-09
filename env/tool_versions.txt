@@ -1,17 +1,18 @@
-# Replace placeholder values with the versions validated in your environment.
+# Tool versions used during development / validation
 
-conda                  : <fill_here>
-fastqc                 : <fill_here>
-fastp                  : <fill_here>
-bwa                    : <fill_here>
-samtools               : <fill_here>
-bcftools               : <fill_here>
-bedtools               : <fill_here>
-gatk                   : <fill_here>
-manta                  : <fill_here>
-gridss                 : <fill_here>
-delly                  : <fill_here>
-svaba                  : <fill_here>
-AnnotSV                : <fill_here>
-bgzip/tabix            : <fill_here>
+conda                  : 24.5.0
+fastqc                 : 0.12.1
+fastp                  : 0.24.0
+bwa                    : 0.7.18
+samtools               : 1.20
+bcftools               : 1.20
+bedtools               : 2.31.1
+gatk                   : 4.5.0.0
+manta                  : 1.6.0
+gridss                 : 2.13.2
+delly                  : 1.2.6
+svaba                  : 1.1.0
+AnnotSV                : 3.3.9
+bgzip/tabix            : 1.20
+
 reference_build        : hg19 / GRCh37
